@@ -1,89 +1,68 @@
+import { View, Text, FlatList, Pressable, Button, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
-//import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, TextInput, Button, ActivityIndicator } from 'react-native';
-import FoodListItem from '../components/FoodListItem';
-import { useState } from 'react';
-import { Alert } from 'react-native';
-import { gql, useLazyQuery } from '@apollo/client'
 
-const query = gql`
-query search($ingr: String) {
-  search(ingr: $ingr) {
-    hints {
-      food {
-        label
-        brand
-        foodId
-        nutrients {
-          ENERC_KCAL
-        }
-      }
-    }
-  }
-}
-`;
+import FoodListItem from '../components/FoodListItem';
 
 const foodItems = [
-  { label: "Pizza", cal: 60, brand: 'Dominos' },
-  { label: "lol", cal: 50, brand: 'lpl' },
-  { label: "kawa", cal: 11150, brand: 'costamcostam' },
-  { label: "Pizza", cal: 60, brand: 'Dominos' },
+  {
+    food: { label: "Pizza", nutrients: { ENERC_KCAL: 100 }, brand: 'Dominos' }
+  },
+  {
+    food: { label: "Pizza", nutrients: { ENERC_KCAL: 100 }, brand: 'Dominos' }
+  },
+];
 
-
-]
-
-export default function SEarchScreen() {
-  const [search, setSearch] = useState('');
-
-  const [runSearch, { data, loading, error }] = useLazyQuery(query);
-
-  const performSearch = () => {
-    runSearch({ variables: { ingr: search } });
-    //setSearch('');
-  }
-
-  // if (loading) {
-  //   return <ActivityIndicator />;
-  // }
-
-  if (error) {
-    console.log("wystapil blad", error); // Logowanie błędu
-    return <Text>Something went wrong. Please try again.</Text>;
-  }
-
-
-  const items = data?.search?.hints || [];
-
+export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <TextInput value={search}
-        onChangeText={setSearch}
-        placeholder="szukaj"
-        style={styles.input}
-      />
-      {search && <Button title="Search" onPress={performSearch} />}
+<View style={styles.container}>
 
-      {loading && <ActivityIndicator />}
+<View style={styles.headerRow} >
+        <Text style={styles.subtitle}>Calories</Text>
+            <Text>1334 - 34 = 344</Text>
+      </View>
+    
+      <View style={styles.headerRow} >
+        <Text style={styles.subtitle}>Today's food</Text>
+        {/* <Link href="/search">
+        <Button title="ADD FOOD" /> */}
+        <Link href="/search" asChild>
+          <Pressable style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5 }}>
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>ADD FOOD</Text>
+          </Pressable>
+        </Link>
+      </View>
+
+
       <FlatList
-        data={items}
-        renderItem={({ item }) => <FoodListItem item={item} />}
-        ListEmptyComponent={() => <Text>Search a food</Text>} //tekst ktory sie wyswiwtla zanim wyszukasz cokolwiek
+        data={foodItems}
         contentContainerStyle={{ gap: 5 }}
+        renderItem={({ item }) => <FoodListItem item={item} />}
       />
+
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: 'white',
     flex: 1,
-    backgroundColor: '#fff',
     padding: 10,
-    gap: 10,
+    gap: 10
   },
-  input: {
-    backgroundColor: '#f2f2f2',
-    padding: 10,
-    borderRadius: 5,
+
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+
+  subtitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    flex: 1,
+    color: 'dimgray'
   }
-});
+})
+
