@@ -48,10 +48,10 @@ export default function SEarchScreen() {
   }
   
   if (error) {
+    console.log("wystapil blad", error); // Logowanie błędu
     return <Text>Something went wrong. Please try again.</Text>;
-    
-
   }
+  
   
   console.log(JSON.stringify(data, null, 2));
 
