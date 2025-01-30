@@ -69,7 +69,7 @@ export default function SEarchScreen() {
       {search && <Button title="Search" onPress={performSearch} />}
 
       <FlatList
-        data={foodItems}
+        data={data.search.hints}
         renderItem={({ item }) => <FoodListItem item={item} />}
         contentContainerStyle={{ gap: 5 }}
       />
