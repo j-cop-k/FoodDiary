@@ -47,11 +47,11 @@ export default function SEarchScreen() {
     return <ActivityIndicator />;
   }
   
-  // if (error) {
-  //   return <Text>Something went wrong. Please try again.</Text>;
+  if (error) {
+    return <Text>Something went wrong. Please try again.</Text>;
     
 
-  // }
+  }
   
   console.log(JSON.stringify(data, null, 2));
 
