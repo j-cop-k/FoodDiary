@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, FlatList, TextInput, Button, ActivityIndicator 
 import FoodListItem from '../components/FoodListItem';
 import { useState } from 'react';
 import { Alert } from 'react-native';
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 
 const query = gql`
 query search($ingr: String) {
@@ -35,29 +35,24 @@ const foodItems = [
 export default function SEarchScreen() {
   const [search, setSearch] = useState('');
 
-  const {data, loading, error } = useQuery(query, { variables: { ingr: "Pizza" } })
+  const [runSearch, { data, loading, error }] = useLazyQuery(query);
 
   const performSearch = () => {
-    //console.warn('Searching for:', search);
-    Alert.alert(
-      "Twoje zapytanie", // Tytuł alertu
-      `Searching for: ${search}`, // Wiadomość w alert)
-    )
-
-    setSearch('');
+    runSearch({ variables: { ingr: search } });
+    //setSearch('');
   }
 
-  if (loading) {
-    return <ActivityIndicator />;
-  }
-  
+  // if (loading) {
+  //   return <ActivityIndicator />;
+  // }
+
   if (error) {
     console.log("wystapil blad", error); // Logowanie błędu
     return <Text>Something went wrong. Please try again.</Text>;
   }
-  
-  
-  console.log(JSON.stringify(data, null, 2));
+
+
+  const items = data?.search?.hints || [];
 
   return (
     <View style={styles.container}>
@@ -68,9 +63,11 @@ export default function SEarchScreen() {
       />
       {search && <Button title="Search" onPress={performSearch} />}
 
+      {loading && <ActivityIndicator />}
       <FlatList
-        data={data.search.hints}
+        data={items}
         renderItem={({ item }) => <FoodListItem item={item} />}
+        ListEmptyComponent={() => <Text>Search a food</Text>} //tekst ktory sie wyswiwtla zanim wyszukasz cokolwiek
         contentContainerStyle={{ gap: 5 }}
       />
     </View>
