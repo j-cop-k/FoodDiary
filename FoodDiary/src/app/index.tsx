@@ -7,16 +7,20 @@ import { Alert } from 'react-native';
 import { gql, useQuery } from '@apollo/client'
 
 const query = gql`
-  query search($date: Date!, $user_id: String!) {
-    search(date: $date, user_id: $user_id) {
-      food_id
-      user_id
-      created_at
-      label
-      kcal
-      id
+query search($ingr: String) {
+  search(ingr: $ingr) {
+    hints {
+      food {
+        label
+        brand
+        foodId
+        nutrients {
+          ENERC_KCAL
+        }
+      }
     }
   }
+}
 `;
 
 const foodItems = [
