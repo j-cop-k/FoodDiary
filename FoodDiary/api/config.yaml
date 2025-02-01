@@ -1,5 +1,8 @@
 configurationset:
   - configuration:
+      name: postgresql_config
+      uri: postgresql://ep-late-wildflower-a8tp1ckd-pooler.eastus2.azure.neon.tech/neondb?user=neondb_owner&password=npg_XP6sxwT8FdWz
+  - configuration:
       name: edamam
       app_id: bee09784
       app_key: 2a784f65845053cd0320592af08f9b53

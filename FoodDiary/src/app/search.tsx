@@ -53,7 +53,7 @@ export default function SEarchScreen() {
         placeholder="szukaj"
         style={styles.input}
       />
-      {search && <Button title="Search" onPress={performSearch} />}
+      {search && <Button title="aaaa" onPress={performSearch} />}
 
       {loading && <ActivityIndicator />}
       <FlatList
