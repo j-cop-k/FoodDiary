@@ -49,7 +49,7 @@ const onPlusPressed= async ()=>{
         <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.food.label}</Text>
         <Text style={{ color: 'dimgray' }}>{item.food.nutrients.ENERC_KCAL} cal, {item.food.brand}</Text>
       </View>
-      <AntDesign onPress={onPlusPressed} name="pluscircleo" size={20} color="blue" />
+      <AntDesign onPress={onPlusPressed} name="pluscircleo" size={20} color='#6699ff' />
     </View>
   );
 };

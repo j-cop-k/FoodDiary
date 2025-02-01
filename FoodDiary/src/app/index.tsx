@@ -1,10 +1,19 @@
-import { View, Text, FlatList, Pressable, Button, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, 
+  Text,
+   FlatList, 
+   Pressable, 
+   Button, 
+   StyleSheet,
+    ActivityIndicator,
+    TextInput 
+   } from 'react-native';
 import { Link } from 'expo-router';
 import { gql, useQuery } from '@apollo/client'
 //import FoodListItem from '../components/FoodListItem';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import FoodLogListItem from '../components/FoodLogListItem';
+import { useState } from 'react';
 
 
 const query = gql`
@@ -35,19 +44,26 @@ dayjs.extend(utc); // Aktywacja pluginu
 
 export default function HomeScreen() {
   const user_id = 'jakubK';
-  
-  const { data, loading, error } = useQuery(query, {
+  const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState(2000);//ustawianie dziennego celu kalorycznego
+
+
+
+  const { data, loading, error, refetch  } = useQuery(query, {
     variables: {
       date: dayjs().format('YYYY-MM-DD'),
       user_id,
-  
+
     },
   });
-  
+
+  // liczenie dziennych kalorii
+  const totalConsumedCalories = data?.foodLogsForDate?.reduce((sum, item) => sum + item.kcal, 0) || 0;
+  const remainingCalories = dailyCaloriesGoal - totalConsumedCalories;
+
 
   console.log(data)
-  
- 
+
+
 
   if (loading) {
     return <ActivityIndicator />;
@@ -59,14 +75,22 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+{/* wyswietlanie kalorii */}
 
-      <View style={styles.headerRow} >
-        <Text style={styles.subtitle}>Calories</Text>
-        <Text>1334 - 34 = 344</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.subtitle}>Daily calories goal</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={dailyCaloriesGoal.toString()}
+          onChangeText={(text) => {
+            const numericValue = parseInt(text) || 0;
+            setDailyCaloriesGoal(numericValue);
+          }}
+        />
+        <Text>{dailyCaloriesGoal} - {totalConsumedCalories} = {remainingCalories}</Text>
       </View>
 
-      {/* expo start --clear
-expo run:android */}
 
 
 
@@ -75,18 +99,25 @@ expo run:android */}
         {/* <Link href="/search">
         <Button title="ADD FOOD" /> */}
         <Link href="/search" asChild>
-          <Pressable style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5 }}>
+          <Pressable style={{ backgroundColor: '#6699ff', padding: 10, borderRadius: 5 }}>
             <Text style={{ color: 'white', fontWeight: 'bold' }}>ADD FOOD</Text>
           </Pressable>
         </Link>
       </View>
 
 
-      <FlatList
+      {/* <FlatList
         data={data.foodLogsForDate}
         contentContainerStyle={{ gap: 5 }}
         renderItem={({ item }) => <FoodLogListItem item={item} />}
-      />
+      /> */}
+<FlatList
+  data={data?.foodLogsForDate || []}
+  contentContainerStyle={{ gap: 5 }}
+  renderItem={({ item }) => <FoodLogListItem item={item} refetch={refetch} />}
+/>
+
+
 
 
     </View>
@@ -112,7 +143,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     flex: 1,
     color: 'dimgray'
+  },
+
+  input: {
+    backgroundColor: '#f2f2f2',
+    padding: 10,
+    borderRadius: 5,
+    width: 80,
+    textAlign: 'center',
   }
+
 })
 
 // npg_XP6sxwT8FdWz tutuajajajaja

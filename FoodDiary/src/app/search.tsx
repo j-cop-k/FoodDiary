@@ -1,6 +1,13 @@
 import { Link } from 'expo-router';
 //import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, TextInput, Button, ActivityIndicator } from 'react-native';
+import { StyleSheet,
+   Text, 
+   View, 
+   FlatList, 
+   TextInput,
+    Button, 
+    ActivityIndicator,
+  Pressable } from 'react-native';
 import FoodListItem from '../components/FoodListItem';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -53,7 +60,13 @@ export default function SEarchScreen() {
         placeholder="szukaj"
         style={styles.input}
       />
-      {search && <Button title="aaaa" onPress={performSearch} />}
+      {/* {search && <Button title="Search" onPress={performSearch} />} */}
+
+      {search && (
+  <Pressable style={styles.button} onPress={performSearch}>
+    <Text style={styles.buttonText}>SEARCH</Text>
+  </Pressable>
+)}
 
       {loading && <ActivityIndicator />}
       <FlatList
@@ -77,5 +90,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     padding: 10,
     borderRadius: 5,
-  }
+  },
+  button: {
+    backgroundColor: '#6699ff', 
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center', 
+  },
+  buttonText: {
+    color: 'white', 
+    fontWeight: 'bold',
+  },
 });
