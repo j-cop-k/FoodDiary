@@ -16,10 +16,13 @@ const client = new ApolloClient({
 });
 
 const RootLayout = () => {
-  return (
-    <ApolloProvider client={client}>
-      <Stack />
-    </ApolloProvider>
+    return (
+        <ApolloProvider client={client}>
+          <Stack screenOptions={{ headerShown: true }}> {/* ✅ Włączono nagłówki */}
+            <Stack.Screen name="index" options={{ title: "My Feed" }} /> {/* ✅ Zmieniona nazwa ekranu głównego */}
+            <Stack.Screen name="search" options={{ title: "Search Food" }} /> {/* ✅ Zmieniona nazwa ekranu wyszukiwania */}
+          </Stack>
+        </ApolloProvider>
   );
 };
 

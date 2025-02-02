@@ -13,7 +13,10 @@ import { gql, useQuery } from '@apollo/client'
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import FoodLogListItem from '../components/FoodLogListItem';
-import { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useCallback, useState } from 'react';
+
+
 
 
 const query = gql`
@@ -25,6 +28,7 @@ query foodLogsForDate($date: Date!, $user_id: String!) {
     label
     id
     kcal
+    grams
   }
 }
 `;
@@ -45,23 +49,43 @@ dayjs.extend(utc); // Aktywacja pluginu
 export default function HomeScreen() {
   const user_id = 'jakubK';
   const [dailyCaloriesGoal, setDailyCaloriesGoal] = useState(2000);//ustawianie dziennego celu kalorycznego
+  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
 
 
 
   const { data, loading, error, refetch  } = useQuery(query, {
     variables: {
-      date: dayjs().format('YYYY-MM-DD'),
+      date: selectedDate, 
+      //date: dayjs().format('YYYY-MM-DD'),
       user_id,
 
     },
   });
 
-  // liczenie dziennych kalorii
-  const totalConsumedCalories = data?.foodLogsForDate?.reduce((sum, item) => sum + item.kcal, 0) || 0;
-  const remainingCalories = dailyCaloriesGoal - totalConsumedCalories;
+  useEffect(() => {
+    refetch();
+  }, [selectedDate]);
 
+  // ✅ Automatyczne odświeżanie po powrocie na ekran
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [])
+  );
 
-  console.log(data)
+  // liczenie dziennych kalorii PRZED GRAMATURA
+  // const totalConsumedCalories = data?.foodLogsForDate?.reduce((sum, item) => sum + item.kcal, 0) || 0;
+  // const remainingCalories = dailyCaloriesGoal - totalConsumedCalories;
+  
+  //gramatura
+  const totalConsumedCalories = data?.foodLogsForDate?.reduce(
+    (sum, item) => sum + item.kcal, // ✅ Teraz sumuje kcal przeliczone na podstawie gramatury
+    0
+  ) || 0;
+  
+  const remainingCalories = dailyCaloriesGoal - totalConsumedCalories; // ✅ Dodane obliczanie pozostałych kalorii
+  
+
 
 
 
@@ -76,6 +100,22 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
 {/* wyswietlanie kalorii */}
+
+
+      {/* 🔹 PRZYCISKI DO PRZEŁĄCZANIA DNI */}
+      <View style={styles.dateSelector}>
+  <Pressable onPress={() => setSelectedDate(dayjs(selectedDate).subtract(1, 'day').format('YYYY-MM-DD'))}>
+    <Text style={styles.dateButton}>&lt; Previous</Text>
+  </Pressable>
+
+  <Text style={styles.dateText}>{dayjs(selectedDate).format('DD MMM YYYY')}</Text>
+
+  <Pressable onPress={() => setSelectedDate(dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD'))}>
+    <Text style={styles.dateButton}>Next &gt;</Text>
+  </Pressable>
+</View>
+
+
 
       <View style={styles.headerRow}>
         <Text style={styles.subtitle}>Daily calories goal</Text>
@@ -111,15 +151,14 @@ export default function HomeScreen() {
         contentContainerStyle={{ gap: 5 }}
         renderItem={({ item }) => <FoodLogListItem item={item} />}
       /> */}
+{/* ✅ Upewnij się, że `grams` jest poprawnie wyświetlane */}
 <FlatList
-  data={data?.foodLogsForDate || []}
-  contentContainerStyle={{ gap: 5 }}
-  renderItem={({ item }) => <FoodLogListItem item={item} refetch={refetch} />}
-/>
-
-
-
-
+        data={data?.foodLogsForDate || []}
+        contentContainerStyle={{ gap: 5 }}
+        renderItem={({ item }) => (
+          <FoodLogListItem item={item} refetch={refetch} />
+        )}
+      />
     </View>
   );
 }
@@ -151,7 +190,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 80,
     textAlign: 'center',
-  }
+  },
+  dateSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  dateButton: {
+    fontSize: 16,
+    color: 'dimgray',
+    fontWeight: 'bold',
+  },
+  dateText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    flex: 1, // ✅ Sprawia, że tekst zajmuje dostępne miejsce
+    textAlign: 'center', // ✅ Wycentrowanie tekstu
+  },
 
 })
 

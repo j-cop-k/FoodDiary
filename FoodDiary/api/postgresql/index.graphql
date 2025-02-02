@@ -5,6 +5,7 @@ type Food_log {
   kcal: Int
   label: String
   user_id: String
+  grams: Int 
 }
 
 """
@@ -64,6 +65,7 @@ type Mutation {
     food_id: String!
     kcal: Int!
     user_id: String!
+    grams: Int!
     id: Int!
     created_at: DateTime!
   ): Food_log
@@ -79,6 +81,7 @@ type Mutation {
     food_id: String
     kcal: Int
     user_id: String
+    grams: Int
   ): Food_log
     @dbquery(
       type: "postgresql"
